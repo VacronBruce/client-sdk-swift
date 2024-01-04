@@ -42,7 +42,7 @@ extension Engine: TransportDelegate {
         }
     }
 
-    func transport(_ transport: Transport, didGenerateIceCandidate iceCandidate: LKRTCIceCandidate) {
+    func transport(_ transport: Transport, didGenerateIceCandidate iceCandidate: RTCIceCandidate) {
         Task {
             do {
                 log("sending iceCandidate")
@@ -53,7 +53,7 @@ extension Engine: TransportDelegate {
         }
     }
 
-    func transport(_ transport: Transport, didAddTrack track: LKRTCMediaStreamTrack, rtpReceiver: LKRTCRtpReceiver, streams: [LKRTCMediaStream]) {
+    func transport(_ transport: Transport, didAddTrack track: RTCMediaStreamTrack, rtpReceiver: RTCRtpReceiver, streams: [RTCMediaStream]) {
         log("did add track")
         if transport.target == .subscriber {
             // execute block when connected
@@ -67,20 +67,20 @@ extension Engine: TransportDelegate {
         }
     }
 
-    func transport(_ transport: Transport, didRemoveTrack track: LKRTCMediaStreamTrack) {
+    func transport(_ transport: Transport, didRemoveTrack track: RTCMediaStreamTrack) {
         if transport.target == .subscriber {
             notify { $0.engine(self, didRemoveTrack: track) }
         }
     }
 
-    func transport(_ transport: Transport, didOpenDataChannel dataChannel: LKRTCDataChannel) {
+    func transport(_ transport: Transport, didOpenDataChannel dataChannel: RTCDataChannel) {
         log("Server opened data channel \(dataChannel.label)(\(dataChannel.readyState))")
 
         Task {
             if subscriberPrimary, transport.target == .subscriber {
                 switch dataChannel.label {
-                case LKRTCDataChannel.labels.reliable: await subscriberDataChannel.set(reliable: dataChannel)
-                case LKRTCDataChannel.labels.lossy: await subscriberDataChannel.set(lossy: dataChannel)
+                case RTCDataChannel.labels.reliable: await subscriberDataChannel.set(reliable: dataChannel)
+                case RTCDataChannel.labels.lossy: await subscriberDataChannel.set(lossy: dataChannel)
                 default: log("Unknown data channel label \(dataChannel.label)", .warning)
                 }
             }

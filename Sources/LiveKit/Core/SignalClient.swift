@@ -35,7 +35,7 @@ class SignalClient: MulticastDelegate<SignalClientDelegate> {
         case join(Livekit_JoinResponse)
         case reconnect(Livekit_ReconnectResponse)
 
-        public var rtcIceServers: [LKRTCIceServer] {
+        public var rtcIceServers: [RTCIceServer] {
             switch self {
             case let .join(response): return response.iceServers.map { $0.toRTCType() }
             case let .reconnect(response): return response.iceServers.map { $0.toRTCType() }
@@ -368,7 +368,7 @@ extension SignalClient {
         }
     }
 
-    func send(offer: LKRTCSessionDescription) async throws {
+    func send(offer: RTCSessionDescription) async throws {
         let r = Livekit_SignalRequest.with {
             $0.offer = offer.toPBType()
         }
@@ -376,7 +376,7 @@ extension SignalClient {
         try await _sendRequest(r)
     }
 
-    func send(answer: LKRTCSessionDescription) async throws {
+    func send(answer: RTCSessionDescription) async throws {
         let r = Livekit_SignalRequest.with {
             $0.answer = answer.toPBType()
         }
@@ -384,7 +384,7 @@ extension SignalClient {
         try await _sendRequest(r)
     }
 
-    func sendCandidate(candidate: LKRTCIceCandidate, target: Livekit_SignalTarget) async throws {
+    func sendCandidate(candidate: RTCIceCandidate, target: Livekit_SignalTarget) async throws {
         let r = try Livekit_SignalRequest.with {
             $0.trickle = try Livekit_TrickleRequest.with {
                 $0.target = target
